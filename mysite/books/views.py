@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import Book, Author
 from django.template import loader
 from django.views.generic import DetailView, ListView
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token, csrf_protect
 
 # Create your views here.
@@ -37,6 +37,15 @@ class BookUpdateView(UpdateView):
     model = Book
     fields = ["book_name", "pub_date", "book_author"]
 
+class BookDeleteView(DeleteView):
+    model = Book
+    success_url = '/books'
+    template_name = "books/books_confirm_delete.html"
+
+class AuthorDeleteView(DeleteView):
+    model = Author
+    success_url = '/books'
+    template_name = "books/author_confirm_delete.html"
 
 def index(request):
     books_list = Book.objects.all()
