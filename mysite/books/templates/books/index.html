@@ -1,9 +1,23 @@
-{% if books_list %}
-    <ul>
-    {% for b in books_list %}
-        <li><a href="/books/{{b.id}}/">{{b.book_name}}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No books are available.</p>
-{% endif %}
+
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}!</p>
+        <a href="/auth/logout">Log out</a>
+    {% else %}
+        <a href="/auth/login/">Log in</a>
+    {% endif %}
+
+    {% if books_list %}
+        <ul>
+        {% for b in books_list %}
+            <li><a href="/books/{{b.id}}/">{{b.book_name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No books are available.</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if perms.books.create_book %}
+            <a href="/books/create">New book</a>
+        {% endif %}
+    {% endif %}

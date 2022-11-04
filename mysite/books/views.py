@@ -4,6 +4,8 @@ from .models import Book, Author
 from django.template import loader
 from django.views.generic import DetailView, ListView
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.contrib.auth.models import Permission, User
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token, csrf_protect
 
 # Create your views here.
@@ -21,19 +23,23 @@ class AuthorDetailView(DetailView):
     model = Author
     template_name = 'books/author_details.html'
 
-class AuthorCreateView(CreateView):
+class AuthorCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "books.add_author"
     model = Author
     fields = ["author_fullname", "author_birthdate"]
 
-class AuthorUpdateView(UpdateView):
+class AuthorUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = "books.change_author"
     model = Author
     fields = ["author_fullname", "author_birthdate"]
 
-class BookCreateView(CreateView):
+class BookCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "books.add_book"
     model = Book
     fields = ["book_name", "pub_date", "book_author"]
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = "books.change_book"
     model = Book
     fields = ["book_name", "pub_date", "book_author"]
 
@@ -48,12 +54,15 @@ class AuthorDeleteView(DeleteView):
     template_name = "books/author_confirm_delete.html"
 
 def index(request):
+    user = get_object_or_404(User, pk=2)
+    print(user.get_all_permissions())
     books_list = Book.objects.all()
     template = loader.get_template('books/index.html')
     context = {
         'books_list': books_list,
     }
     return HttpResponse(template.render(context, request))
+
 
 def show_books(request, book_id):
     #book_all = Book.objects.all()
